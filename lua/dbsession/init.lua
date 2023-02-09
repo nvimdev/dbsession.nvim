@@ -2,7 +2,7 @@ local api, fn, uv = vim.api, vim.fn, vim.loop
 local dbs = {}
 
 local function iswin()
-  return uv.os_uname().version == 'WindowsNT'
+  return uv.os_uname().sysname == 'Windows_NT'
 end
 
 local function path_sep()
