@@ -8,7 +8,7 @@ A simple small and powerful session plugin for neovim
 
 ```lua
 require('lazy').setup({
-    {'glepnir/dbsession.nvim', event = 'BufRead' or cmd = 'SessionSave',
+    {'glepnir/dbsession.nvim', cmd = { 'SessionSave', 'SessionDelete', 'SessionLoad'},
       opts = { --config --}
     }
 })
@@ -17,7 +17,7 @@ require('lazy').setup({
 - packer.nvim
 
 ```lua
-use({'glepnir/dbsession.nvim',event = 'BufRead' or cmd = 'SessionSave',
+use({'glepnir/dbsession.nvim', cmd = { 'SessionSave', 'SessionDelete', 'SessionLoad'},
     config = function() require('dbsession').setup({}) end
 })
 ```
