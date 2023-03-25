@@ -43,7 +43,22 @@ local function session_load(session_name)
   -- if not session load the latest
   if not session_name or #session_name == 0 then
     local list = session_list()
-    file_path = list[#list]
+    local cwd = vim.fn.getcwd()
+    local tbl = vim.split(cwd, path_sep(),{trim_empty = true})
+    local dir = tbl[#tbl]
+    tbl = vim.tbl_filter(function(item)
+      tbl = vim.split(item, path_sep(), { trim_empty = true})
+      item = tbl[#tbl]
+      if item:find(dir) then
+        return true
+      end
+      return false
+    end,list)
+    if #tbl > 0 then
+      file_path = tbl[#tbl]
+    else
+      file_path = list[#list]
+    end
   else
     file_path = full_name(session_name)
   end
