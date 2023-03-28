@@ -13,6 +13,10 @@ local function path_join(...)
   return table.concat({ ... }, path_sep())
 end
 
+local function escape_pattern(pattern)
+	return (string.gsub(pattern, "[%%%+%-%.%$%(%)%[%]%^%?%%]", "%%%0"))
+end
+
 local function default_session_name()
   local cwd = fn.resolve(fn.getcwd())
   local home = vim.split(vim.env.HOME, path_sep(), { trimempty = true })
@@ -45,7 +49,7 @@ local function session_load(session_name)
     local list = session_list()
     local cwd = vim.fn.getcwd()
     local tbl = vim.split(cwd, path_sep(),{trim_empty = true})
-    local dir = tbl[#tbl]
+    local dir = escape_pattern(tbl[#tbl])
     tbl = vim.tbl_filter(function(item)
       tbl = vim.split(item, path_sep(), { trim_empty = true})
       item = tbl[#tbl]
