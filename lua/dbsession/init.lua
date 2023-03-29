@@ -13,16 +13,11 @@ local function path_join(...)
   return table.concat({ ... }, path_sep())
 end
 
-local function escape_pattern(pattern)
-	return (string.gsub(pattern, "[%%%+%-%.%$%(%)%[%]%^%?%%]", "%%%0"))
-end
-
 local function default_session_name()
   local cwd = fn.resolve(fn.getcwd())
-  local home = vim.split(vim.env.HOME, path_sep(), { trimempty = true })
-  cwd = table.concat(vim.list_slice(vim.split(cwd, path_sep()), #home + 2), '_')
-  local curtime = os.date('%Y_%m_%d_%H_%M_%S')
-  return cwd .. '_' .. curtime
+  cwd = table.concat(vim.split(cwd, path_sep()), '_')
+  cwd = cwd:gsub('%.','_')
+  return cwd
 end
 
 local function session_list()
@@ -47,21 +42,14 @@ local function session_load(session_name)
   -- if not session load the latest
   if not session_name or #session_name == 0 then
     local list = session_list()
-    local cwd = vim.fn.getcwd()
+    local cwd = fn.resolve(vim.fn.getcwd())
     local tbl = vim.split(cwd, path_sep(),{trim_empty = true})
-    local dir = escape_pattern(tbl[#tbl])
-    tbl = vim.tbl_filter(function(item)
-      tbl = vim.split(item, path_sep(), { trim_empty = true})
-      item = tbl[#tbl]
+    local dir = tbl[#tbl]
+    for _, item in ipairs(list) do
       if item:find(dir) then
-        return true
+        file_path = item
+        break
       end
-      return false
-    end,list)
-    if #tbl > 0 then
-      file_path = tbl[#tbl]
-    else
-      file_path = list[#list]
     end
   else
     file_path = full_name(session_name)
@@ -142,7 +130,7 @@ end
 local function default()
   return {
     dir = path_join(fn.stdpath('cache'), 'session'),
-    auto_save_on_exit = true,
+    auto_save_on_exit = false,
   }
 end
 
