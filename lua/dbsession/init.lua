@@ -14,9 +14,19 @@ local function path_join(...)
 end
 
 local function default_session_name()
-  local cwd = fn.resolve(fn.getcwd())
-  cwd = table.concat(vim.split(cwd, path_sep()), '_')
-  cwd = cwd:gsub('%.','_')
+  local cwd = vim.fs.normalize(fn.getcwd())
+  local tbl = vim.split(cwd, path_sep(), { trimempty = true })
+  tbl = vim.tbl_map(function(item)
+    if item:find('%p') then
+      item = item:gsub('%p', '_')
+    end
+    return item
+  end,tbl)
+  cwd = table.concat(tbl, '_')
+  if iswin() then
+    cwd = cwd:gsub('C:', '')
+  end
+  cwd = fn.substitute(cwd, [[^\.]], '', '')
   return cwd
 end
 
@@ -30,7 +40,7 @@ end
 
 local function session_save(session_name)
   local file_name = (not session_name or #session_name == 0) and default_session_name() or session_name
-  local file_path = path_join(dbs.opt.dir, file_name .. '.vim')
+  local file_path = path_join(dbs.opt.dir,file_name .. '.vim')
   api.nvim_command('mksession! ' .. fn.fnameescape(file_path))
   vim.v.this_session = file_path
 
@@ -42,11 +52,9 @@ local function session_load(session_name)
   -- if not session load the latest
   if not session_name or #session_name == 0 then
     local list = session_list()
-    local cwd = fn.resolve(vim.fn.getcwd())
-    local tbl = vim.split(cwd, path_sep(),{trim_empty = true})
-    local dir = tbl[#tbl]
+    local sname = default_session_name()
     for _, item in ipairs(list) do
-      if item:find(dir) then
+      if item:find(sname) then
         file_path = item
         break
       end
