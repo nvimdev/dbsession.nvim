@@ -44,7 +44,7 @@ local function session_save(session_name)
   api.nvim_command('mksession! ' .. fn.fnameescape(file_path))
   vim.v.this_session = file_path
 
-  vim.notify('[dbsession] save ' .. file_name, vim.log.levels.INFO)
+  print('[dbsession] save ' .. file_name, vim.log.levels.INFO)
 end
 
 local function session_load(session_name)
@@ -71,7 +71,7 @@ local function session_load(session_name)
     vim.cmd([[ noautocmd silent! %bwipeout!]])
     api.nvim_command('silent! source ' .. file_path)
 
-    vim.notify('[dbsession] load session ' .. file_path, vim.log.levels.INFO)
+    print('[dbsession] load session ' .. file_path, vim.log.levels.INFO)
     return
   end
 
@@ -80,7 +80,7 @@ end
 
 local function session_delete(name)
   if not name then
-    vim.notify('[dbsession] please choice a session to delete', vim.log.levels.WARN)
+    print('[dbsession] please choice a session to delete', vim.log.levels.WARN)
     return
   end
 
