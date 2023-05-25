@@ -68,10 +68,14 @@ local function session_load(session_name)
   end
 
   if fn.filereadable(file_path) == 1 then
+    --save before load session
+    local curbuf = vim.api.nvim_get_current_buf()
+    if vim.bo[curbuf].modified then
+      vim.cmd.write()
+    end
     vim.cmd([[ noautocmd silent! %bwipeout!]])
     api.nvim_command('silent! source ' .. file_path)
-
-    print('[dbsession] load session ' .. file_path, vim.log.levels.INFO)
+    print('[dbsession] load session ' .. file_path)
     return
   end
 
@@ -80,7 +84,7 @@ end
 
 local function session_delete(name)
   if not name then
-    print('[dbsession] please choice a session to delete', vim.log.levels.WARN)
+    vim.notify('[dbsession] please choice a session to delete', vim.log.levels.WARN)
     return
   end
 
