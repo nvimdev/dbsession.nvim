@@ -21,7 +21,7 @@ local function default_session_name()
       item = item:gsub('%p', '_')
     end
     return item
-  end,tbl)
+  end, tbl)
   cwd = table.concat(tbl, '_')
   if iswin() then
     cwd = cwd:gsub('C:', '')
@@ -39,12 +39,13 @@ local function full_name(session_name)
 end
 
 local function session_save(session_name)
-  local file_name = (not session_name or #session_name == 0) and default_session_name() or session_name
-  local file_path = path_join(dbs.opt.dir,file_name .. '.vim')
+  local file_name = (not session_name or #session_name == 0) and default_session_name()
+    or session_name
+  local file_path = path_join(dbs.opt.dir, file_name .. '.vim')
   api.nvim_command('mksession! ' .. fn.fnameescape(file_path))
   vim.v.this_session = file_path
 
-  print('[dbsession] save ' .. file_name, vim.log.levels.INFO)
+  print('[dbsession] save ' .. file_name)
 end
 
 local function session_load(session_name)
@@ -75,7 +76,7 @@ local function session_load(session_name)
     end
     vim.cmd([[ noautocmd silent! %bwipeout!]])
     api.nvim_command('silent! source ' .. file_path)
-    print('[dbsession] load session ' .. file_path)
+    -- print('[dbsession] load session ' .. file_path)
     return
   end
 
